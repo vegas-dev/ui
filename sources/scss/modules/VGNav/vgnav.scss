@@ -1,8 +1,16 @@
+/**
+* Модуль: VGNav
+* Автор: Vegas Studio
+* Лицензия: смотри LICENSE.md
+**/
+
 .vg-nav {
 	display: block;
 
 	.c {
 		padding: inherit;
 		font-size: small;
+		left: 0;
+		flex-wrap: wrap;
 	}
 }

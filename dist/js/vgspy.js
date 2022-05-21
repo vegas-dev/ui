@@ -1,17 +1,18 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
 /**
  * --------------------------------------------------------------------------
- * Module VGNav: vgnav.js
+ * Module VGSpy: vgspy.js
  * Автор: Vegas Studio
  * Лицензия: см. файл LICENSE.md
  * --------------------------------------------------------------------------
  */
+class VGSpy {}
 
-import VGSidebar from "../VGSidebar/vgsidebar";
-
-class VGNav {
-	constructor (arg, callback) {
-
-	}
-}
-
-export default VGNav;
+var _default = VGSpy;
+exports.default = _default;

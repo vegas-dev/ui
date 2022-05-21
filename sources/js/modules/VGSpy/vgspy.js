@@ -1,17 +1,13 @@
 /**
  * --------------------------------------------------------------------------
- * Module VGNav: vgnav.js
+ * Module VGSpy: vgspy.js
  * Автор: Vegas Studio
  * Лицензия: см. файл LICENSE.md
  * --------------------------------------------------------------------------
  */
 
-import VGSidebar from "../VGSidebar/vgsidebar";
+class VGSpy {
 
-class VGNav {
-	constructor (arg, callback) {
-
-	}
 }
 
-export default VGNav;
+export default VGSpy;
