@@ -6,12 +6,8 @@
  * --------------------------------------------------------------------------
  */
 
-import VGNav from "./sources/js/modules/VGNav/vgnav";
-import VGSidebar from "./sources/js/modules/VGSidebar/vgsidebar";
-import VGSpy from "./sources/js/modules/VGSpy/vgspy";
+import VGNav from "./VGNav";
 
-export default {
-	VGNav,
-	VGSidebar,
-	VGSpy
-}
+export {
+	VGNav
+};

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const sass = require("sass");
 
-const files = ["Panzoom", "Panzoom.Controls", "Carousel", "Fancybox"];
+const files = ["VGNav", "VGSidebar"];
 
 for (const file_name of files) {
 	let input_file;
@@ -12,10 +12,10 @@ for (const file_name of files) {
 	const plugin = words[1] || false;
 
 	if (plugin) {
-		input_file = `./src/${component}/plugins/${plugin}/${plugin}.scss`;
+		input_file = `./src/scss/${component}/plugins/${plugin}/${plugin}.scss`;
 		output_file = `./dist/${component.toLowerCase()}.${plugin.toLowerCase()}.css`;
 	} else {
-		input_file = `./src/${component}/${component}.scss`;
+		input_file = `./src/scss/${component}/${component}.scss`;
 		output_file = `./dist/${component.toLowerCase()}.css`;
 	}
 

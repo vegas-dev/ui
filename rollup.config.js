@@ -11,7 +11,7 @@ import filesize from "rollup-plugin-filesize";
 import pkg from "./package.json";
 
 const config = [];
-const files = ["Panzoom", "Panzoom.Controls", "Carousel", "Carousel.Autoplay", "Fancybox"];
+const files = ["VGNav"];
 
 for (const file_name of files) {
 	let input_file;
@@ -30,7 +30,7 @@ for (const file_name of files) {
 	}
 
 	config.push({
-		input: `src/${input_file}`,
+		input: `src/js/${input_file}`,
 		output: {
 			file: `dist/${output_file}.esm.js`,
 			format: "es",
@@ -40,13 +40,13 @@ for (const file_name of files) {
 			eslint(),
 			replace({ __VERSION__: pkg.version, preventAssignment: true }),
 			terser(),
-			banner(`@fancyapps/ui/${file_name} v${pkg.version}`),
+			banner(`@vegas-dev/apps/${file_name} v${pkg.version}`),
 			filesize({ showMinifiedSize: false }),
 		],
 	});
 
 	config.push({
-		input: `src/${input_file}`,
+		input: `src/js/${input_file}`,
 		output: {
 			file: `dist/${output_file}.umd.js`,
 			format: "umd",
@@ -67,7 +67,7 @@ for (const file_name of files) {
 			eslint(),
 			replace({ __VERSION__: pkg.version, preventAssignment: true }),
 			terser(),
-			banner(`@fancyapps/ui/${file_name} v${pkg.version}`),
+			banner(`@vegas-dev/apps/${file_name} v${pkg.version}`),
 			filesize({ showMinifiedSize: false }),
 		],
 	});
