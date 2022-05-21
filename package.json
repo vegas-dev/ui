@@ -31,7 +31,7 @@
 		"postversion": "git push && git push --tags && npm publish --access=public",
 		"test": "karma start karma.conf.js",
 		"version": "npm run build:js && npm run build:css && git add .",
-		"watch:css": "npm-watch"
+		"watch": "npm-watch"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.16.7",
@@ -72,5 +72,22 @@
 		"not dead",
 		"not op_mini all"
 	],
+	"watch": {
+		"build:css": {
+			"patterns": [
+				"src"
+			],
+			"extensions": "scss",
+			"quiet": true
+		},
+
+		"build:js": {
+			"patterns": [
+				"src"
+			],
+			"extensions": "js",
+			"quiet": true
+		}
+	},
 	"dependencies": {}
 }

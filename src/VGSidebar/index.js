@@ -6,8 +6,8 @@
  * --------------------------------------------------------------------------
  */
 
-import VGNav from "./VGNav";
+import VGSidebar from "./js/VGSidebar";
 
 export {
-	VGNav
+	VGSidebar
 };

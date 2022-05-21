@@ -6,7 +6,7 @@
  * --------------------------------------------------------------------------
  */
 
-import VGSidebar from "../VGSidebar/VGSidebar";
+import VGSidebar from "../../VGSidebar/js/VGSidebar";
 
 class VGNav {
 	constructor (arg, callback) {

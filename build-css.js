@@ -12,10 +12,10 @@ for (const file_name of files) {
 	const plugin = words[1] || false;
 
 	if (plugin) {
-		input_file = `./src/scss/${component}/plugins/${plugin}/${plugin}.scss`;
+		input_file = `./src/${component}/plugins/${plugin}/scss/${plugin}.scss`;
 		output_file = `./dist/${component.toLowerCase()}.${plugin.toLowerCase()}.css`;
 	} else {
-		input_file = `./src/scss/${component}/${component}.scss`;
+		input_file = `./src/${component}/scss/${component}.scss`;
 		output_file = `./dist/${component.toLowerCase()}.css`;
 	}
 

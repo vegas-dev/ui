@@ -11,7 +11,7 @@ import filesize from "rollup-plugin-filesize";
 import pkg from "./package.json";
 
 const config = [];
-const files = ["VGNav"];
+const files = ["VGNav", "VGSidebar", "VGSpy"];
 
 for (const file_name of files) {
 	let input_file;
@@ -30,7 +30,7 @@ for (const file_name of files) {
 	}
 
 	config.push({
-		input: `src/js/${input_file}`,
+		input: `src/${input_file}`,
 		output: {
 			file: `dist/${output_file}.esm.js`,
 			format: "es",
@@ -46,7 +46,7 @@ for (const file_name of files) {
 	});
 
 	config.push({
-		input: `src/js/${input_file}`,
+		input: `src/${input_file}`,
 		output: {
 			file: `dist/${output_file}.umd.js`,
 			format: "umd",
