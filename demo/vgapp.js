@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-require("core-js/modules/es.object.assign.js");
-
 var _vgsidebar = _interopRequireDefault(require("../VGSidebar/vgsidebar"));
 
 var _vgspy = _interopRequireDefault(require("../VGSpy/vgspy"));
