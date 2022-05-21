@@ -4,8 +4,8 @@
 	"description": "A hodgepodge of plugins and web applications that can work together and complement each other",
 	"scripts": {
 		"clean": "rimraf dist/{css/*,js/*}",
-		"scss": "node-sass --output-style compressed -o dist/css sources/scss",
-		"babel": "mkdirp dist/js -p && babel sources/js/*.js -o dist/js/vgapp.ui.js && babel --presets minify sources/js/*.js -o dist/js/vgapp.ui.min.js",
+		"scss": "node-sass --output-style compressed -o dist/css sources/scss/app.scss",
+		"babel": "mkdirp dist/js -p && babel sources/js/app.js -o dist/js/vgapp.ui.js && babel --presets minify sources/js/app.js -o dist/js/vgapp.ui.min.js",
 		"build:css": "run-s scss",
 		"build:js": "run-s babel",
 		"build": "run-s build:*",
