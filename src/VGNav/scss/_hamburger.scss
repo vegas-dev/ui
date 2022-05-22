@@ -4,8 +4,7 @@
 	justify-content: center;
 	width: var(--vg-hamburger-line-width);
 	height: calc(var(--vg-hamburger-line-height) * 3 + var(--vg-hamburger-line-indent-top) * 2);
-	position: absolute;
-	left: 0;
+	position: relative;
 
 	span {
 		background-color: var(--vg-hamburger-line-color);
@@ -35,6 +34,7 @@
 &--title {
 	position: relative;
 	display: inline-block;
+	margin-right: 3px;
 }
 
 &.show {

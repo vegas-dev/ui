@@ -153,11 +153,12 @@
 	}
 
 	&-hamburger {
-		--vg-hamburger-line-width: #{$hamburger-line-width};
-		--vg-hamburger-line-height: #{$hamburger-line-height};
+		--vg-hamburger-line-width:      #{$hamburger-line-width};
+		--vg-hamburger-line-height:     #{$hamburger-line-height};
 		--vg-hamburger-line-indent-top: #{$hamburger-line-indent-top};
-		--vg-hamburger-line-color: #{$hamburger-line-color};
+		--vg-hamburger-line-color:      #{$hamburger-line-color};
 		display: none;
+		align-items: flex-start;
 
 		@import "hamburger";
 	}
@@ -167,7 +168,7 @@
 	@include media-breakpoint-down($breakpoint, $nav-breakpoints) {
 		.vg-nav-#{$breakpoint} {
 			.vg-nav-hamburger {
-				display: block;
+				display: flex;
 			}
 
 			> ul {
@@ -179,10 +180,15 @@
 
 .vg-nav-xxl {
 	.vg-nav-hamburger {
-		display: block;
+		display: flex;
 	}
 
 	> ul {
 		display: none;
 	}
 }
+
+/**
+* Sidebar нам пригодится
+**/
+@import '../../VGSidebar/scss/VGSidebar.scss';

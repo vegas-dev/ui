@@ -19,6 +19,11 @@ class VGNav {
 			isHover: false, // Выпадающее меню будет открываться при наведении если определено как true, или при клике если false
 			toggle: '<span class="default"></span>', // Кастомный переключатель для выпадающего списка
 			mobileTitle: '', // Помимо иконки (с полосками), можно добавить заголовок, например: "Меню" или "Навигация"
+			sidebar: {
+				placement: 'right',
+				clone: null,
+				hash: false
+			}
 		}, arg);
 
 		// Функция обратного вызова
@@ -39,6 +44,7 @@ class VGNav {
 		this.sidebar = 'vg-nav-sidebar';
 		this.classes = {
 			container: 'vg-nav-wrapper',
+			sidebar: 'vg-sidebar',
 			hamburger: 'vg-nav-hamburger',
 			cloned: 'vg-nav-cloned',
 			hover: 'vg-nav-hover',
@@ -92,12 +98,50 @@ class VGNav {
 
 		if (responsive_class) {
 			let mTitle = '';
-
 			if (_this.settings.mobileTitle) {
 				mTitle = '<span class="' + _this.classes.hamburger + '--title">'+ _this.settings.mobileTitle +'</span>';
 			}
 
 			$container.insertAdjacentHTML('afterbegin','<a href="#" class="' + _this.classes.hamburger + '">' + mTitle + '<span class="' + _this.classes.hamburger + '--lines"><span></span><span></span><span></span></span></a>');
+		}
+
+		// инит сайдбара
+		let $sidebar = document.getElementById(_this.sidebar),
+			opt_sidebar = _this.settings.sidebar || false,
+			sidebarOpen = opt_sidebar.placement || 'right',
+			$_sidebar;
+
+		if (responsive_class) {
+			if (!$sidebar) {
+				let mTitle = '';
+				if (_this.settings.mobileTitle) {
+					mTitle = '<span class="' + _this.classes.sidebar + '-title">'+ _this.settings.mobileTitle +'</span>';
+				}
+
+				document.body.insertAdjacentHTML('beforeend','<div class="' + _this.classes.sidebar + ' ' + sidebarOpen + '" id="'+ _this.sidebar +'">' +
+					'<div class="vg-sidebar-content">' +
+					'<div class="vg-sidebar-header">'+ mTitle +'<div class="' + _this.classes.sidebar + '-close" data-dismiss="' + _this.classes.sidebar +'">&times;</div></div>' +
+					'<div class="vg-sidebar-body"></div>' +
+					'</div></div>');
+
+				let $clone_target = document.getElementsByClassName(_this.classes.sidebar + '-body');
+				_this.cloneNavigation($clone_target, $container.querySelector('.' + _this.classes.container));
+			} else {
+				$_sidebar = $sidebar[0].cloneNode(true);
+				document.body.appendChild($_sidebar);
+				$sidebar[1].classList.add(sidebarOpen);
+				$sidebar[0].remove();
+
+				if ('clone' in opt_sidebar) {
+					if(opt_sidebar.clone) {
+						let $clone_target = document.querySelector('.' + _this.classes.sidebar).querySelectorAll(opt_sidebar.clone);
+
+						if ($clone_target) {
+							_this.cloneNavigation($clone_target, $container.querySelector('.' + _this.classes.container));
+						}
+					}
+				}
+			}
 		}
 
 		this.isInit = true;
@@ -205,6 +249,35 @@ class VGNav {
 				_this.dispose($navigation, 'dropdown-mega');
 			}
 		});
+
+		if ($click_dismiss) {
+			$click_dismiss.onclick = () => {
+				_this.dispose($navigation);
+				_this.dispose($navigation, 'dropdown-mega');
+				return false;
+			}
+		}
+
+		// если меню свернулось вызываем боковую панель
+		$click_hamburger.onclick = function () {
+			let $_self = this,
+				target = _this.sidebar,
+				options = {
+					hash: _this.settings.sidebar.hash
+				};
+
+			let $sidebar = new VGSidebar(target, options);
+			$sidebar.open({
+				beforeOpen: function () {
+					$_self.classList.add('show');
+				},
+				afterClose: function () {
+					$_self.classList.remove('show');
+				}
+			})
+
+			return false;
+		}
 
 		function clickBefore(callback, $this, event) {
 			// Функция обратного вызова клика по ссылке до начала анимации
