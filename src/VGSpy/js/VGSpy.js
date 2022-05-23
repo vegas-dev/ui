@@ -6,98 +6,136 @@
  * --------------------------------------------------------------------------
  */
 
+// TODO доделать глобальный офсет и навигацию
+
 class VGSpy {
-	constructor($section, arg, callback) {
-		this.settings = Object.assign({
-			speed: 500,
-			offset: 0,
-			hash: true,
-		}, arg);
+	constructor(navSection, arg = {}) {
+		this.isInit = false;
 
-		if ($section) {
-			this.init($section, callback)
-		}
-	}
+		if (navSection) {
+			if (typeof navSection === 'string') {
+				navSection = document.querySelector(navSection);
+			}
 
-	init($section, callback) {
-		let _this = this,
-			$links = $section.querySelectorAll('[data-target]').length ? $section.querySelectorAll('[data-target]') : $section.querySelectorAll('a');
+			if (navSection instanceof HTMLElement) {
+				this.settings = {
+					offset: navSection.dataset.offset ? navSection.dataset.offset : arg.offset || 0,
+					isState: navSection.dataset.state && navSection.dataset.state === 'false' ? !navSection.dataset.state : arg.state || true,
+					onActive: arg.onActive || null,
+					activeClass: arg.activeClass ? arg.activeClass.trim().split(' ') : ['active']
+				};
 
-		// Функция обратного вызова после инициализации скрипта
-		if (callback && 'afterInit' in callback) {
-			if (typeof callback.afterInit === 'function') callback.afterInit(_this)
-		}
+				this.callback = this.settings.onActive;
+				this.links = navSection.querySelectorAll('[data-target]').length ?
+					navSection.querySelectorAll('[data-target]') :
+					navSection.querySelectorAll('a')
+				;
 
-		if ($links.length) {
-			for (let $link of $links) {
-				$link.onclick = function () {
-					let $_self = this,
-						data = _this.attributes($_self);
+				this.isInit = true;
 
-					if (data.target) {
-						let $el = document.getElementById(data.target);
-						if (!$el) return;
-
-						for (let i = 1; i <= $links.length; i++) {
-							$links[i - 1].classList.remove('active');
-						}
-
-						$_self.classList.add('active');
-
-						let top = $el.offsetTop + (data.offset)
-
-						_this.scroll(null, top)
-					}
-
-					return false;
-				}
-				_this.spy($link, $links)
+				this.onLoad();
+				this.onClick();
+				this.onScroll();
 			}
 		}
 	}
 
-	scroll(pageX = null, pageY = null, clear = false) {
-		window.scrollTo(pageX, pageY);
-
-		if (clear) this.clear();
-	}
-
-	spy($link, $links) {
+	onLoad() {
+		if (!this.isInit) return;
 		let _this = this;
 
-		sTop($link, window.scrollY)
+		window.onload = function () {
+			_this.setCurrentSection(null);
+		}
+	}
+
+	onClick() {
+		if (!this.isInit) return;
+		let _this = this;
+
+		for (let i = 0; i < this.links.length; i++) {
+			this.links[i].onclick = function () {
+				_this.setCurrentSection(this);
+
+				return false;
+			}
+		}
+	}
+
+	onScroll() {
+		if (!this.isInit) return;
+		let _this = this;
 
 		window.onscroll = function () {
-			let $_self = this
-
-			sTop($link, $_self.pageYOffset);
+			_this.setCurrentSection(null);
 		}
+	}
 
-		function sTop(self, scrollTop) {
-			let data = _this.attributes(self),
-				$element = null;
+	setCurrentSection($link = null) {
+		if ($link) {
+			let target = this.attributes($link, 'target'),
+				offset = this.attributes($link, 'offset'),
+				section = document.getElementById(target),
+				to = section.offsetTop + (offset);
 
-			if (data.target && document.getElementById(data.target)) {
-				$element = document.getElementById(data.target);
+			if (section) {
+				this.removeCurrentActive();
+				this.setActive($link, section);
+				window.scrollTo(0, to);
 			}
+		} else {
+			for (let i = 0; i < this.links.length; i++) {
+				let target = this.attributes(this.links[i], 'target'),
+					offset = this.attributes(this.links[i], 'offset'),
+					section = document.getElementById(target),
+					start = section.offsetTop,
+					end = start + section.offsetHeight,
+					currentPosition = (document.documentElement.scrollTop || document.body.scrollTop) + (offset),
+					isInView = currentPosition >= start && currentPosition < end;
 
-			if ($element) {
-				let dist = $element.offsetTop + (data.offset);
-
-				console.log(scrollTop, dist)
-
-				if (scrollTop >= dist) {
-					for (let i = 1; i <= $links.length; i++) {
-						$links[i - 1].classList.remove('active');
-					}
-
-					self.classList.add('active');
+				if (isInView) {
+					this.removeCurrentActive({ignore: this.links[i]});
+					this.setActive(this.links[i], section);
 				}
 			}
 		}
 	}
 
-	attributes(self) {
+	setActive($link, $section) {
+		if (!this.isInit) return;
+
+		const isActive = this.settings.activeClass.every(function (value){
+			return $link.classList.contains(value);
+		});
+
+		if (!isActive) {
+			if ($section) {
+				$section.classList.add(...this.settings.activeClass);
+			}
+
+			if ($link) {
+				$link.classList.add(...this.settings.activeClass);
+			}
+
+			if (typeof this.callback === 'function') {
+				this.callback($link, $section);
+			}
+		}
+	}
+
+	removeCurrentActive(options = { ignore: null }) {
+		for (let i = 0; i < this.links.length; i++) {
+			let target = this.attributes(this.links[i], 'target'),
+				section = document.getElementById(target);
+
+			if (options.ignore !== this.links[i]) {
+				this.links[i].classList.remove(...this.settings.activeClass);
+				section.classList.remove(...this.settings.activeClass);
+			}
+		}
+	}
+
+	attributes(self, prop = '') {
 		let _this = this,
 			target = self.getAttribute('href') || self.dataset.target;
 
@@ -107,38 +145,22 @@ class VGSpy {
 			target = ''
 		}
 
-		let speed = self.dataset.speed ? parseInt(self.dataset.speed) : _this.settings.speed,
-			offset = self.dataset.offset ? parseInt(self.dataset.offset) : _this.settings.offset
+		let offset = self.dataset.offset ? parseInt(self.dataset.offset) : _this.settings.offset;
+
+		if (prop === 'target') return target;
+		if (prop === 'offset') return offset;
 
 		return {
 			target: target,
-			speed: speed,
 			offset: offset
 		};
-	}
-
-	clear() {
-		let $vg_spy = document.querySelectorAll('[data-vgspy]');
-		if ($vg_spy.length) {
-			for (let $spy of $vg_spy) {
-				let $links = $spy.querySelectorAll('[data-target]').length ? $spy.querySelectorAll('[data-target]') : $spy.querySelectorAll('a');
-
-				for (let i = 1; i <= $links.length; i++) {
-					$links[i - 1].classList.remove('active');
-				}
-			}
-		}
 	}
 }
 
 let $vg_spy = document.querySelectorAll('[data-vgspy]');
 if ($vg_spy.length) {
 	for (let $spy of $vg_spy) {
-		let params = {
-			hash: (!($spy.dataset.hash && $spy.dataset.hash === 'false')),
-		};
-
-		new VGSpy($spy, params);
+		new VGSpy($spy);
 	}
 }
 
