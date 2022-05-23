@@ -133,7 +133,7 @@ class VGNav {
 				$sidebar[0].remove();
 
 				if ('clone' in opt_sidebar) {
-					if(opt_sidebar.clone) {
+					if (opt_sidebar.clone) {
 						let $clone_target = document.querySelector('.' + _this.classes.sidebar).querySelectorAll(opt_sidebar.clone);
 
 						if ($clone_target) {
