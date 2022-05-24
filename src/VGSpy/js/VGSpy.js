@@ -6,11 +6,10 @@
  * --------------------------------------------------------------------------
  */
 
-// TODO доделать глобальный офсет и навигацию
-
 class VGSpy {
 	constructor(navSection, arg = {}) {
 		this.isInit = false;
+		this.isClick = false;
 
 		if (navSection) {
 			if (typeof navSection === 'string') {
@@ -19,13 +18,13 @@ class VGSpy {
 
 			if (navSection instanceof HTMLElement) {
 				this.settings = {
-					offset: navSection.dataset.offset ? navSection.dataset.offset : arg.offset || 0,
-					isState: navSection.dataset.state && navSection.dataset.state === 'false' ? !navSection.dataset.state : arg.state || true,
+					offset: navSection.dataset.offset ? parseInt(navSection.dataset.offset) : parseInt(arg.offset) || 0,
+					isState: navSection.dataset.state ? navSection.dataset.state : arg.state || false,
 					onActive: arg.onActive || null,
+					onClick: arg.onClick || null,
 					activeClass: arg.activeClass ? arg.activeClass.trim().split(' ') : ['active']
 				};
 
-				this.callback = this.settings.onActive;
 				this.links = navSection.querySelectorAll('[data-target]').length ?
 					navSection.querySelectorAll('[data-target]') :
 					navSection.querySelectorAll('a')
@@ -55,6 +54,10 @@ class VGSpy {
 
 		for (let i = 0; i < this.links.length; i++) {
 			this.links[i].onclick = function () {
+				if (typeof _this.settings.onClick === 'function') {
+					_this.settings.onClick(this.links[i]);
+				}
+
 				_this.setCurrentSection(this);
 
 				return false;
@@ -66,31 +69,49 @@ class VGSpy {
 		if (!this.isInit) return;
 		let _this = this;
 
-		window.onscroll = function () {
-			_this.setCurrentSection(null);
+		if (!_this.isClick) {
+			window.onscroll = function () {
+				_this.setCurrentSection(null);
+			}
 		}
 	}
 
 	setCurrentSection($link = null) {
+		if (this.settings.isState) {
+			// TODO we expect it in the next version
+			/*let target = window.location.hash;
+			if (target) {
+				let $element = document.querySelector('[href="'+ target +'"]') ||
+					document.querySelector('[href="\/' + target +'"]') ||
+					document.querySelector('[data-target="'+ target.replace('#', '') +'"]') || null;
+
+				if ($element !== null) {
+					$link = $element;
+				}
+			}*/
+		}
+
 		if ($link) {
 			let target = this.attributes($link, 'target'),
 				offset = this.attributes($link, 'offset'),
 				section = document.getElementById(target),
-				to = section.offsetTop + (offset);
+				to = section.offsetTop + (offset) + (this.settings.offset);
 
 			if (section) {
 				this.removeCurrentActive();
 				this.setActive($link, section);
 				window.scrollTo(0, to);
+
+				this.isClick = false;
 			}
 		} else {
 			for (let i = 0; i < this.links.length; i++) {
 				let target = this.attributes(this.links[i], 'target'),
 					offset = this.attributes(this.links[i], 'offset'),
 					section = document.getElementById(target),
-					start = section.offsetTop,
+					start = section.offsetTop + (offset) + (this.settings.offset),
 					end = start + section.offsetHeight,
-					currentPosition = (document.documentElement.scrollTop || document.body.scrollTop) + (offset),
+					currentPosition = (document.documentElement.scrollTop || document.body.scrollTop),
 					isInView = currentPosition >= start && currentPosition < end;
 
 				if (isInView) {
@@ -108,6 +129,13 @@ class VGSpy {
 			return $link.classList.contains(value);
 		});
 
+		if (this.settings.isState) {
+			let text = this.attributes($link, 'text'),
+				target = this.attributes($link, 'target');
+
+			history.pushState("", document.title + text, '#' + target);
+		}
+
 		if (!isActive) {
 			if ($section) {
 				$section.classList.add(...this.settings.activeClass);
@@ -117,8 +145,8 @@ class VGSpy {
 				$link.classList.add(...this.settings.activeClass);
 			}
 
-			if (typeof this.callback === 'function') {
-				this.callback($link, $section);
+			if (typeof this.settings.onActive === 'function') {
+				this.settings.onActive($link, $section);
 			}
 		}
 	}
@@ -136,8 +164,7 @@ class VGSpy {
 	}
 
 	attributes(self, prop = '') {
-		let _this = this,
-			target = self.getAttribute('href') || self.dataset.target;
+		let target = self.getAttribute('href') || self.dataset.target;
 
 		if (target !== 'undefined' && target.indexOf('#') !== -1) {
 			target = target.replace(/(^.+)#/gm, '');
@@ -145,14 +172,17 @@ class VGSpy {
 			target = ''
 		}
 
-		let offset = self.dataset.offset ? parseInt(self.dataset.offset) : _this.settings.offset;
+		let offset = self.dataset.offset ? parseInt(self.dataset.offset) : 0;
+		let text = self.innerHTML;
 
 		if (prop === 'target') return target;
 		if (prop === 'offset') return offset;
+		if (prop === 'text') return text;
 
 		return {
 			target: target,
-			offset: offset
+			offset: offset,
+			text: text
 		};
 	}
 }
