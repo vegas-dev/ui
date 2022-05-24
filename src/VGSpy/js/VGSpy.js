@@ -94,10 +94,10 @@ class VGSpy {
 		if ($link) {
 			let target = this.attributes($link, 'target'),
 				offset = this.attributes($link, 'offset'),
-				section = document.getElementById(target),
-				to = section.offsetTop + (offset) + (this.settings.offset);
+				section = document.getElementById(target);
 
 			if (section) {
+				let to = section.offsetTop + (offset) + (this.settings.offset)
 				this.removeCurrentActive();
 				this.setActive($link, section);
 				window.scrollTo(0, to);
@@ -108,15 +108,18 @@ class VGSpy {
 			for (let i = 0; i < this.links.length; i++) {
 				let target = this.attributes(this.links[i], 'target'),
 					offset = this.attributes(this.links[i], 'offset'),
-					section = document.getElementById(target),
-					start = section.offsetTop + (offset) + (this.settings.offset),
-					end = start + section.offsetHeight,
-					currentPosition = (document.documentElement.scrollTop || document.body.scrollTop),
-					isInView = currentPosition >= start && currentPosition < end;
+					section = document.getElementById(target);
 
-				if (isInView) {
-					this.removeCurrentActive({ignore: this.links[i]});
-					this.setActive(this.links[i], section);
+				if (section) {
+					let start = section.offsetTop + (offset) + (this.settings.offset),
+						end = start + section.offsetHeight,
+						currentPosition = (document.documentElement.scrollTop || document.body.scrollTop),
+						isInView = currentPosition >= start && currentPosition < end;
+
+					if (isInView) {
+						this.removeCurrentActive({ignore: this.links[i]});
+						this.setActive(this.links[i], section);
+					}
 				}
 			}
 		}
@@ -168,6 +171,10 @@ class VGSpy {
 
 		if (target !== 'undefined' && target.indexOf('#') !== -1) {
 			target = target.replace(/(^.+)#/gm, '');
+
+			if (target.indexOf('#') !== -1) {
+				target = target.replace('#', '');
+			}
 		} else if (target !== 'undefined' && target.indexOf('#') === -1) {
 			target = ''
 		}
