@@ -109,7 +109,7 @@ class VGNav {
 		let $sidebar = document.getElementById(_this.sidebar),
 			opt_sidebar = _this.settings.sidebar || false,
 			sidebarOpen = opt_sidebar.placement || 'right',
-			$_sidebar;
+			historyState = opt_sidebar.hash ? 'data-hash="true"' : '';
 
 		if (responsive_class) {
 			if (!$sidebar) {
@@ -118,7 +118,7 @@ class VGNav {
 					mTitle = '<span class="' + _this.classes.sidebar + '-title">'+ _this.settings.mobileTitle +'</span>';
 				}
 
-				document.body.insertAdjacentHTML('beforeend','<div class="' + _this.classes.sidebar + ' ' + sidebarOpen + '" id="'+ _this.sidebar +'">' +
+				document.body.insertAdjacentHTML('beforeend','<div class="' + _this.classes.sidebar + ' ' + sidebarOpen + '" id="'+ _this.sidebar +'" '+ historyState +'>' +
 					'<div class="vg-sidebar-content">' +
 					'<div class="vg-sidebar-header">'+ mTitle +'<div class="' + _this.classes.sidebar + '-close" data-dismiss="' + _this.classes.sidebar +'">&times;</div></div>' +
 					'<div class="vg-sidebar-body"></div>' +
@@ -127,11 +127,6 @@ class VGNav {
 				let $clone_target = document.getElementsByClassName(_this.classes.sidebar + '-body');
 				_this.cloneNavigation($clone_target, $container.querySelector('.' + _this.classes.container));
 			} else {
-				$_sidebar = $sidebar[0].cloneNode(true);
-				document.body.appendChild($_sidebar);
-				$sidebar[1].classList.add(sidebarOpen);
-				$sidebar[0].remove();
-
 				if ('clone' in opt_sidebar) {
 					if (opt_sidebar.clone) {
 						let $clone_target = document.querySelector('.' + _this.classes.sidebar).querySelectorAll(opt_sidebar.clone);
